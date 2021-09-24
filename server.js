@@ -14,14 +14,12 @@ const cors = require('cors');
 const compression = require('compression');
 const cache = require('./middleware/cache');
 const errorHandler = require('./middleware/error');
+const notFound = require('./middleware/notFound');
+
 const connectDB = require('./config/db');
 const shouldCompress = require('./utils/shouldCompress');
 // Load env vars
 dotenv.config({ path: './config/.env' });
-
-// Route files
-const auth = require('./routes/auth');
-const users = require('./routes/users');
 
 const app = express();
 
@@ -66,10 +64,15 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 // Do caching...
 app.use(cache(300));
+// Route files
+// const auth = require('./routes/auth');
+const users = require('./routes/users');
+
 // Mount routers
-app.use('/api/v1/auth', auth);
+// app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
 
+app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
